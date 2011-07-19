@@ -1,33 +1,47 @@
 #include "FnWord.h"
 #include "Fn.h"
 #include <iostream>
+#include <math.h>
+#include <qlist.h>
+#include "changeBase.h"
 
-int main(int argc, char *argv[])
+int main()
 {
     int i=0,j=0;
     int count=0;
-    Basis base(2);
+    int length=0, rank=0;
+    std::cout<<"Computing # of Separable Word of length, n, and rank, r."<<std::endl;
+    std::cout<<"n: ";
+    std::cin>>length;
+    std::cout<<"r: ";
+    std::cin>>rank;
+    Basis base(rank);
+    QString string;
     FnWord word;
-    for(i=4;i<5;i++)
+    QList<int> wordGen;
+    for(i=0;i<pow(2*rank,length);i++)
     {
-        count=0;
-        for(j=0;j<1000000;j++)
+        wordGen=changeBase(i, 2*rank);
+        while(wordGen.size()<length)
         {
-           word=base.at(rand()%4);
-           while(word.size()<i)
-           {
-               word*=base.at(rand()%4);
-           }
-           //std::cout<<word.toStdString()<<std::endl;
-           word=word.cyclicWord();
-           if(word.isSeparable(base))
-           {
-               count++;
-           }
+            wordGen.push_front(0);
         }
-        std::cout << "S("<<i<< ",2)="<<count << std::endl;
-
+        string="";
+        for(j=0;j<wordGen.size();j++)
+        {
+            string+=base.at(wordGen[j]);
+        }
+        word=string;
+        word.tighten();
+        if(word.size()==length&&word.isSeparable(base))
+        {
+            count++;
+        }
     }
+    std::cout<<count<<" out of "<<(2*rank*pow(2*rank-1,length-1))<<" words of ";
+    std::cout<<"length "<<length<<" and rank "<<rank<<" are separable."<<std::endl;
 
     return 0;
 }
+
+

@@ -58,6 +58,15 @@ void FnGraph::removeEdge(const QString &edge)
 {
     QVector<QString> nodes= take(edge);
     QVector<QString> edges;
+    if(nodes.at(0)==nodes.at(1))
+    {
+        if(vertices.contains(nodes.at(0)))
+        {
+            edges=vertices.value(nodes.at(0));
+            vertices[nodes.at(0)].remove(edges.indexOf(edge));
+        }
+        return;
+    }
     if(vertices.contains(nodes.at(0)))
     {
         edges=vertices.value(nodes.at(0));
