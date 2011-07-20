@@ -123,12 +123,15 @@ bool FnWord::isSeparable(const Basis &basis) const {
     QList<QString> vertices;
     QString setZ;
     QString cutVertex;
+
+
     if(components.size()>1)
     {
         return true;
     }
     else  //this part needs to be cleaned up
     {
+        graph.simplify();
         components=graph.biconnectedComponents();
         if(components.size()>1)
         {
@@ -163,7 +166,6 @@ bool FnWord::isSeparable(const Basis &basis) const {
            WhiteheadData whData(basis.getRank(),setZ,cutVertex.at(0));
            FnMap phi=whitehead(whData, basis);
            word=phi(*this);
-           word=word.cyclicWord();
            return word.isSeparable(basis);
         }
     }

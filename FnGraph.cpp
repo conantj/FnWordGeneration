@@ -165,6 +165,7 @@ QList<FnGraph> FnGraph::biconnectedComponents() const {
   QList<int> lowpoints;// stores the lowpoint of each vertex;
   QString head;//the other vertex along an edge
   QString edge;//the current edge being looked at
+  bool inComponent;//a boolean to determine if an edge is in the component being built
   int count=0;//keeps track of the number vertices searched
 
   vertexStack=copyOfGraph.isolatedVertices();
@@ -216,10 +217,20 @@ QList<FnGraph> FnGraph::biconnectedComponents() const {
               FnGraph component;
               if(vertexStack.size()>2)
               {
-                    while(!value(edgeStack[0]).contains(vertexStack[2]))
+                    inComponent=true;
+                    while(inComponent)
                     {
                         component.addEdge(edgeStack[0],value(edgeStack[0]));
                         edgeStack.pop_front();
+                        for(int i=2;i<vertexStack.size();i++)
+                        {
+                            if(value(edgeStack[0]).contains(vertexStack[i]))
+                            {
+                                inComponent=false;
+                                break;
+                            }
+                        }
+
                     }
               }
               else
@@ -252,6 +263,27 @@ QList<FnGraph> FnGraph::biconnectedComponents() const {
 
   return biconnectedComponents;
 
+}
+
+void FnGraph::simplify()
+{
+    foreach (QString edge, keys())
+    {
+        if(keys(value(edge)).size()>1)
+        {
+            removeEdge(edge);
+        }
+        else
+        {
+            QVector<QString> temp;
+            temp.append(value(edge).at(1));
+            temp.append(value(edge).at(0));
+            if(keys(temp).size()>0)
+            {
+                removeEdge(edge);
+            }
+        }
+    }
 }
 
 bool FnGraph::isSubGraph(const FnGraph &gamma) const
